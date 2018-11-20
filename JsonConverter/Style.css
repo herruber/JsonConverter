@@ -1,0 +1,32 @@
+﻿html{
+    width:100%;
+    height:100%;
+}
+
+body {
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    padding:0;
+    margin:0;
+}
+
+.render-view{
+    float:left;
+    width:46%;
+    height:80%;
+    margin:1%;
+    background:red;
+}
+
+.right{
+    float:right;
+    width:46%;
+    height:80%;
+    margin:1%;
+    background:green;
+}
+
+input{
+    display:block;
+}
