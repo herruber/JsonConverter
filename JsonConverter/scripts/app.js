@@ -1,4 +1,24 @@
 ﻿
+var renderview = $(".render-view");
+var width = renderview.width();
+var height = renderview.height();
+
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(75,  width / height , 0.1, 1000);
+
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize(width, height);
+renderview[0].appendChild(renderer.domElement);
+
+var sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), new THREE.MeshStandardMaterial());
+
+function render() {
+
+}
+
+render();
+
+
 function Mesh() {
 
     this.name = "";
@@ -55,6 +75,8 @@ function addInput(parent,mesh, id){
     input.setAttribute("type", "text");
 
     input.value = mesh.name;
+    input.className = "mesh name";
+
     wrapper.appendChild(input);
 
     for (var i = 0; i < mesh.material.length; i++) {
@@ -62,6 +84,7 @@ function addInput(parent,mesh, id){
         input.setAttribute("type", "text");
 
         input.value = mesh.material[i].name
+        input.className = "material_" +i +" mesh_" +id;
         wrapper.appendChild(input);
     }
 
@@ -74,7 +97,7 @@ function setUi() {
 
     var title = document.createElement("input");
     title.setAttribute("type", "text");
-    title.className = "title";
+    title.className = "object name";
     title.value = "name this";
     
     menu[0].appendChild(title);
@@ -119,6 +142,23 @@ function readAndLoadJson(file, length, name) {
 }
 
 
+Array.prototype.each = function(fn, reverse){
+
+    if (reverse) {
+        for (var i = this.length - 1; i >= 0; i++) {
+            fn(i, this[i]);
+        }
+    }
+    else {
+        for (var i = 0; i < this.length; i++) {
+            fn(i, this[i]);
+        }
+    }
+
+   
+
+}
+
 $(".save-btn").click(function (event) {
 
     debugger;
@@ -136,13 +176,59 @@ $(".save-btn").click(function (event) {
         }
 
         var depthMaterial = isGlas ? "depthAlphaMaterial" : null;
+
+        currentModel.mesh[i].material.each(function (id, mat) {
+
+            currentModel.mesh[i].material[id].name = $(".material_" + id + ".mesh_" + i).val();
+        })
+
         var m = meshToJson(currentModel.mesh[i], depthMaterial);
+
         meshes.push(m)
     }
 
 
+  
+
     console.log(meshes)
-    //var file = JSON.stringify(currentModel)
+
+    
+
+    var model = {
+        name: $(".object.name").val(),
+        mesh: meshes,
+        modelData: {
+            name: $(".object.name").val(),
+            type: "",
+            pricePer: "Unit",
+            price: [
+              4999
+            ],
+            discount: 0,
+            holetype: "Square",
+            width: 0,
+            height: 0,
+            depth: 0,
+            angle: 0,
+            family: "2k92",
+            icon: "../Configurator/Textures/Icons/6x9.png"
+        }
+
+    }
+  
+    var json = JSON.stringify(model, null, 2)
+    var file = new Blob([json], { type: "application/json" });
+
+        var a = document.createElement("a"),
+        url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = model.name;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
 
 })
 
@@ -157,6 +243,7 @@ $(".load").change(function (event) {
   
 
 })
+
 
 function meshToJson(mesh, depthMaterial) {
 
