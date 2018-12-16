@@ -5,20 +5,35 @@ var height = renderview.height();
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75,  width / height , 0.1, 1000);
-
+camera.position.set(0, 2, 2)
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(width, height);
 renderview[0].appendChild(renderer.domElement);
 
-var sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 8), new THREE.MeshStandardMaterial());
+var material = new THREE.MeshStandardMaterial();
+
+var sun = new THREE.DirectionalLight(0xffffff, 1.0);
+sun.position.set(0, 10, 4)
+var ambient = new THREE.AmbientLight(0xffffff, 0.5)
+
+
+var sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 32), material);
+scene.add(sphere, sun, ambient);
+scene.add(camera)
+
+var controls = new THREE.OrbitControls(camera, renderer.domElement)
+controls.update();
 
 function render() {
+    requestAnimationFrame(render);
 
+    sun.position.x = Math.cos(performance.now() / 1000) * 40;
+    renderer.render(scene, camera);
 }
 
 render();
 
-
+console.log(scene)
 function Mesh() {
 
     this.name = "";
@@ -302,3 +317,42 @@ function meshToJson(mesh, depthMaterial) {
 
     return m;
 }
+
+//MAterial editor code
+
+function loadMaterial(mat) {
+
+    var data = $(".material-editor")[0]
+
+
+
+
+    for (var prop in mat) {
+        
+        var txt = document.createElement("input");
+        txt.setAttribute("type", "text")
+        txt.className = prop;
+
+        txt.value = '\n' + '{"' + prop + '":"' + JSON.stringify(mat[prop]) + '"}'
+        data.appendChild(txt)
+
+        $(txt).change(function (event) {
+
+            var json = JSON.parse(event.target.value);
+            console.log(json)
+            
+            for (var p in json) {
+
+                var nr = parseFloat(json[p])
+                material[p] = isNaN(nr) ? json[p] : nr;
+                break;
+            }
+
+        })
+
+    }
+
+
+}
+
+loadMaterial(material);

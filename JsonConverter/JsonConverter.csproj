@@ -118,6 +118,7 @@
     <Content Include="scripts\jquery-3.3.1.slim.js" />
     <Content Include="scripts\jquery-3.3.1.slim.min.js" />
     <None Include="scripts\_References.js" />
+    <Content Include="scripts\OrbitControls.js" />
     <Content Include="scripts\three.js" />
     <Content Include="Style.css" />
     <Content Include="Web.config" />
